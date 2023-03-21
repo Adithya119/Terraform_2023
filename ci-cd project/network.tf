@@ -80,10 +80,10 @@ resource "aws_route_table" "public_rt_cicd" {   # define a route table here
 
 resource "aws_route_table_association" "public-route-table-association-1" {           # give both incoming & outgoing connections here
     route_table_id = aws_route_table.public_rt_cicd.id            # incoming connections come from here
-    subnet_id = aws_subnet.subnets-cicd[0]                        # incoming traffic will be directed here
+    subnet_id = aws_subnet.subnets-cicd[0].id                        # incoming traffic will be directed here
 }
 
 resource "aws_route_table_association" "public-route-table-association-2" {   
     route_table_id = aws_route_table.public_rt_cicd.id 
-    subnet_id = aws_subnet.subnets-cicd[1]
+    subnet_id = aws_subnet.subnets-cicd[1].id
 }
