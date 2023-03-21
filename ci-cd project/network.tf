@@ -13,7 +13,7 @@ resource "aws_subnet" "subnets-cicd" {
     count = length(var.subnet-cidrs)
     vpc_id = aws_vpc.vpc-cicd-1.id
     cidr_block = var.subnet-cidrs[count.index]
-    availabilty_zone = var.AZs[count.index]
+    availability_zone = var.AZs[count.index]
     tags = {
         name = var.subnet-names[count.index]
     }
