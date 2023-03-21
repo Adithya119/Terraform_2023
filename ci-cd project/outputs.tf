@@ -15,7 +15,7 @@ output "public-rt-name" {
 }
 
 output "vm-1-public-ip" {
-    value = aws_instance.web-vms[0].ip
+    value = aws_instance.web-vms[0].public_ip
 }
 
 output "vm-1-tags" {
