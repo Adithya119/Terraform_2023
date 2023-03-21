@@ -12,7 +12,7 @@ resource "aws_instance" "web-vms" {
     ami = "ami-0f8ca728008ff5af4"   # ubuntu 22
     instance_type = "t2.micro"
     associate_public_ip_address = true
-    key_name = aws_key_pair.key-1.key_name
+    key_name = data.aws_key_pair.key-1.key_name   # since we are referring "data", use data.aws_key_pair  * * * * * 
     vpc_security_group_ids = [aws_security_group.SG-1.id]
     subnet_id = aws_subnet.subnets-cicd[count.index].id     # tricky [count.index].id       # ids --> plural
     tags = {
