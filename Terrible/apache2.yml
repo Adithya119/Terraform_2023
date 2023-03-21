@@ -1,0 +1,10 @@
+- hosts: all
+  become: yes
+  name: Install apache2
+  tasks:
+    - name: install apache2
+      package:
+        name: apache2
+        update_cache: yes     # sudo apt update
+        state: present
+        
