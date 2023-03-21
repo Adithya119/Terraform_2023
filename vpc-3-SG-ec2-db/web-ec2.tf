@@ -1,9 +1,9 @@
 # creating a web server & null_resource (remote-exec)
 
-resource "aws_key_pair" "key2" {
+resource "aws_key_pair" "key2" {     # you need to create a key-pair & have it ready in the local folder before writing & executing this block
     key_name = "key2"
-    public_key = file(var.key2-pub)  # file reads the contents of a file at the given path and returns them as a string.
-}                                      # file(path)
+    public_key = file(var.key2-pub)  # file(path) --> file reads the contents of a file at the given path and returns them as a string.
+}                                      
 
 resource "aws_instance" "web-server-1" {
     ami = "ami-0851b76e8b1bce90b"
