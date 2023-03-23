@@ -7,7 +7,7 @@ write_files:
     permissions: "0644"
     content: "<h1>cloud init was here</h1>"
 runcmd:
-  - amazon-linux-extras install -y nginx1
+  - sudo apt install nginx -y
   - mv /run/myserver/index.html /usr/share/nginx/html/index.html
   - systemctl enable --no-block nginx 
   - systemctl start --no-block nginx 
