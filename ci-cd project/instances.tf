@@ -7,7 +7,7 @@ data "aws_key_pair" "key-1" {    # pulling existing key-pair --> hence used "dat
     }
 }
 
-data "cloudinit_config" "cloud-init-user-data" {
+data "template_cloudinit_config" "cloud-init-user-data" {    # this was working even with just --> data "cloudinit_config"
     part {
       content_type = "text/cloud-config"   # This is "required", opposed to what's mentioned in terraform registry   * * * 
       content = file("cloud-config.yaml")   
@@ -24,7 +24,7 @@ resource "aws_instance" "web-vms" {
     key_name = data.aws_key_pair.key-1.key_name             # since we are referring "data", use data.aws_key_pair  * * * * * 
     vpc_security_group_ids = [aws_security_group.SG-1.id]
     subnet_id = aws_subnet.subnets-cicd[count.index].id     # tricky [count.index].id       # ids --> plural
-    user_data = data.cloudinit_config.cloud-init-user-data.rendered     # user_data
+    user_data = data.template_cloudinit_config.cloud-init-user-data.rendered     # user_data
     tags = {
         name = var.vm-names[count.index]   # var in tags as well --> vars can be used anywhere you want
     }    
