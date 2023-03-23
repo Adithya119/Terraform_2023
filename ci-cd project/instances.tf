@@ -7,6 +7,7 @@ data "aws_key_pair" "key-1" {    # pulling existing key-pair --> hence used "dat
     }
 }
 
+
 data "template_cloudinit_config" "cloud-init-user-data" {    # this was working even with just --> data "cloudinit_config"
     part {
       content_type = "text/cloud-config"   # This is "required", opposed to what's mentioned in terraform registry   * * * 
@@ -14,6 +15,9 @@ data "template_cloudinit_config" "cloud-init-user-data" {    # this was working 
     # content = file("${path.module}/cloud-config.yaml") -->  ${path.module} points to current directory & it is not mandatory
   }
 }
+# cloud_init was successful after referring these 2 sites:-
+#   https://registry.terraform.io/providers/hashicorp/template/latest/docs/data-sources/cloudinit_config
+#   https://www.sammeechward.com/cloud-init-and-terraform-with-aws
 
 
 resource "aws_instance" "web-vms" {
