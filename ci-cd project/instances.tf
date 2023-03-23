@@ -7,9 +7,15 @@ data "aws_key_pair" "key-1" {    # pulling existing key-pair --> hence used "dat
     }
 }
 
-data "template_file" "cloud-init-user-data" {
-    template = file("/scripts/cloud-init.yaml")
+data "template_cloudinit_config" "cloud-init-user-data" {
+    gzip          = true
+    base64_encode = true
+    part {
+      content_type = "text/cloud-config"
+      content = file("${path.module}/cloud-config.yaml")
+  }
 }
+
 
 resource "aws_instance" "web-vms" {
     count = 2
@@ -19,7 +25,7 @@ resource "aws_instance" "web-vms" {
     key_name = data.aws_key_pair.key-1.key_name             # since we are referring "data", use data.aws_key_pair  * * * * * 
     vpc_security_group_ids = [aws_security_group.SG-1.id]
     subnet_id = aws_subnet.subnets-cicd[count.index].id     # tricky [count.index].id       # ids --> plural
-    user_data = data.template_file.cloud-init-user-data.rendered     # user_data
+    user_data = data.template_cloudinit_config.cloud-init-user-data.rendered     # user_data
     tags = {
         name = var.vm-names[count.index]   # var in tags as well --> vars can be used anywhere you want
     }    
