@@ -8,7 +8,7 @@ data "aws_key_pair" "key-1" {    # pulling existing key-pair --> hence used "dat
 }
 
 data "template_file" "cloud-init-user-data" {
-    template = file("scripts/cloud-init.yaml")
+    template = file("../scripts/cloud-init.yaml")
 }
 
 resource "aws_instance" "web-vms" {
