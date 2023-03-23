@@ -1,4 +1,4 @@
-# 1st ever cloud-init file
+# Never write this file without manually testing the commands 1st
 
 #cloud-config
 write_files: 
@@ -7,6 +7,7 @@ write_files:
     permissions: "0644"
     content: "<h1>cloud init was here</h1>"
 runcmd:
+  - sudo apt update           # without this, nginx installation was failing
   - sudo apt install nginx -y
   - mv /run/myserver/index.html /usr/share/nginx/html/index.html
   - systemctl enable --no-block nginx 
