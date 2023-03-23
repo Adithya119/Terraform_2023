@@ -9,7 +9,7 @@ data "aws_key_pair" "key-1" {    # pulling existing key-pair --> hence used "dat
 
 data "template_cloudinit_config" "cloud-init-user-data" {
     part {
-      #content_type = "text/cloud-config"   # optional
+      content_type = "text/cloud-config"   # 
       content = file("${path.module}/cloud-config.yaml")
   }
 }
