@@ -8,10 +8,8 @@ data "aws_key_pair" "key-1" {    # pulling existing key-pair --> hence used "dat
 }
 
 data "template_cloudinit_config" "cloud-init-user-data" {
-    gzip          = true
-    base64_encode = true
     part {
-      content_type = "text/cloud-config"
+      content_type = "text/cloud-config"   # optional
       content = file("${path.module}/cloud-config.yaml")
   }
 }
