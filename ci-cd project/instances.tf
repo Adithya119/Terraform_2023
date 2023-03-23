@@ -9,8 +9,8 @@ data "aws_key_pair" "key-1" {    # pulling existing key-pair --> hence used "dat
 
 data "template_cloudinit_config" "cloud-init-user-data" {
     part {
-      content_type = "text/cloud-config"   # 
-      content = file("${path.module}/cloud-config.yaml")
+      content_type = "text/cloud-config"   # This is "required", opposed to what's mentioned in terraform registry   * * * 
+      content = file("${path.module}/cloud-config.yaml")   # path.module points to current directory
   }
 }
 
