@@ -1,0 +1,14 @@
+# 1st ever cloud-init file
+
+#cloud-config
+users:
+  - default
+  - name: adithya
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: sudo
+    lock_passwd: false
+
+runcmd:
+  - sudo su adithya
+  - sudo mkdir /home/adithya/testing
