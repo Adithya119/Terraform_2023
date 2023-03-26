@@ -15,9 +15,9 @@ output "public-rt-name" {
 }
 
 output "vm-1-public-ip" {
-    value = aws_instance.web-vms[0].public_ip
+    value = aws_instance.ansible-controller.public_ip
 }
 
 output "vm-1-tags" {
-    value = aws_instance.web-vms[0].tags
+    value = aws_instance.ansible-controller.tags
 }
