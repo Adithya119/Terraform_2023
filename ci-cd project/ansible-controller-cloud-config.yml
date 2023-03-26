@@ -14,7 +14,7 @@ users:
     shell: /bin/bash
     sudo: ALL=(ALL) NOPASSWD:ALL   ## not reflecting
     plain_text_passwd: 'ansible'  # Authentication failure
-    lock_passwd: false   ## 
+    lock_passwd: true   ## 
 
 
 
