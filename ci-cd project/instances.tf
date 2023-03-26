@@ -28,6 +28,7 @@ resource "aws_instance" "ansible-controller" {
     vpc_security_group_ids = [aws_security_group.SG-1.id]
     subnet_id = aws_subnet.subnets-cicd[0].id     # tricky [count.index].id       # ids --> plural
     user_data = data.template_cloudinit_config.cloud-init-user-data.rendered     # user_data
+    user_data_replace_on_change = true  # When used in combination with user_data, this will trigger a destroy and recreate if instance when set to true
     tags = {
         name = "ansible-controller"
         #name = var.vm-names[count.index]   # var in tags as well --> vars can be used anywhere you want
