@@ -5,16 +5,17 @@ runcmd:
   - sudo apt install software-properties-common -y
   - sudo add-apt-repository --yes --update ppa:ansible/ansible
   - sudo apt install ansible -y
-  - sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config   # echo will not replace - it will append
+  - sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config   # setting this to yes will let you login as "ssh ansible@ip" using password authentication
   - sudo systemctl restart sshd   # sudo needed
 
 users:
-  - default  # I think this points to ubuntu user on ubuntu OS
+  - default  # I think this points to ubuntu (default) user on ubuntu OS
   - name: ansible     # hyphen given only before name
     shell: /bin/bash
-    sudo: ALL=(ALL) NOPASSWD:ALL   ## not reflecting
+    sudo: ALL=(ALL) NOPASSWD:ALL   ## sudoers file will not show an entry on ansible user. May be that's why ansible user is added to the group "sudo" --> check the line below
+    groups: sudo    # adding ansible user to group sudo --> by default this group is given sudo privileges --> as seen in sudoers file.
     plain_text_passwd: 'ansible'  # Authentication failure
-    lock_passwd: false   ## setting this true will disable password login.
+    lock_passwd: false   ## setting this true will give Authentication failure when you do su - ansible & give password
 
 
 
