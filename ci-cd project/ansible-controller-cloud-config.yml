@@ -5,7 +5,7 @@ runcmd:
   - sudo apt install software-properties-common -y
   - sudo add-apt-repository --yes --update ppa:ansible/ansible
   - sudo apt install ansible -y
-  - sed -i 's/#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config   # echo will not replace - it will append
+  - sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config   # echo will not replace - it will append
   - sudo systemctl restart sshd   # sudo needed
 
 users:
@@ -14,7 +14,7 @@ users:
     shell: /bin/bash
     sudo: ALL=(ALL) NOPASSWD:ALL   ## not reflecting
     plain_text_passwd: 'ansible'  # Authentication failure
-    lock_passwd: true   ## 
+    lock_passwd: false   ## setting this true will disable password login.
 
 
 
