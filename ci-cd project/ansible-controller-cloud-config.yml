@@ -5,16 +5,16 @@ runcmd:
   - sudo apt install software-properties-common -y
   - sudo add-apt-repository --yes --update ppa:ansible/ansible
   - sudo apt install ansible -y
-  - echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config   ## this is not replacing it 
+  - sed -i 's/#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config   # echo will not replace - it will append
   - sudo systemctl restart sshd   # sudo needed
 
 users:
   - default  # I think this points to ubuntu user on ubuntu OS
   - name: ansible     # hyphen given only before name
     shell: /bin/bash
-    sudo: ALL=(ALL) NOPASSWD:ALL
+    sudo: ALL=(ALL) NOPASSWD:ALL   ## not reflecting
     plain_text_passwd: 'ansible'  # Authentication failure
-    lock_passwd: false   # check if this change lets you login with password
+    lock_passwd: false   ## 
 
 
 
