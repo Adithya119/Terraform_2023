@@ -1,0 +1,23 @@
+#cloud-config
+
+runcmd:
+  - sudo apt update
+  - sudo apt install software-properties-common -y
+  - sudo add-apt-repository --yes --update ppa:ansible/ansible
+  - sudo apt install ansible -y
+  - echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
+  - systemctl sshd restart
+
+users:
+  - default  # I think this points to ubuntu user on ubuntu OS
+  - name: ansible     # hyphen given only before name
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    plain_text_passwd: 'ansible'
+    #lock_passwd: false
+
+
+
+
+
+# hashing a password is not the ideal way of concealing it
