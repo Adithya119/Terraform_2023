@@ -1,0 +1,15 @@
+#loud-config
+
+runcmd:
+ #- python is pre-installed
+  - sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+  - sudo systemctl restart sshd
+
+users:
+  - default  
+  - name: ansible     
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL   
+    groups: sudo
+    plain_text_passwd: 'ansible'
+    lock_passwd: false

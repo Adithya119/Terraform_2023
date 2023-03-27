@@ -1,5 +1,7 @@
 #cloud-config
 
+# not pushing any keys from local system --> will run ansible playbooks with password prompt until figuring out a better solution
+
 runcmd:
   - sudo apt update
   - sudo apt install software-properties-common -y
@@ -16,9 +18,6 @@ users:
     groups: sudo    # adding ansible user to group sudo --> by default this group is given sudo privileges --> as seen in sudoers file.
     plain_text_passwd: 'ansible'  # Authentication failure
     lock_passwd: false   ## setting this true will give Authentication failure when you do su - ansible & give password
-
-
-
 
 
 # hashing a password is not the ideal way of concealing it

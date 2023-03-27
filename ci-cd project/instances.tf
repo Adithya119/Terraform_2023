@@ -8,7 +8,7 @@ data "aws_key_pair" "key-1" {    # pulling existing key-pair --> hence used "dat
 }
 
 
-data "template_cloudinit_config" "cloud-init-user-data" {    # this was working even with just --> data "cloudinit_config"
+data "template_cloudinit_config" "cloud-init-ansible-controller" {    # this was working even with just --> data "cloudinit_config"
     part {
       content_type = "text/cloud-config"   # This is "required", opposed to what's mentioned in terraform registry   * * * 
       content = file("ansible-controller-cloud-config.yml")   
@@ -24,13 +24,36 @@ resource "aws_instance" "ansible-controller" {
     ami = "ami-0f8ca728008ff5af4"   # ubuntu 22
     instance_type = "t2.medium"
     associate_public_ip_address = true
-    key_name = data.aws_key_pair.key-1.key_name             # since we are referring "data", use data.aws_key_pair  * * * * * 
+    key_name = data.aws_key_pair.key-1.key_name             # since we are referring "data" block, use data.aws_key_pair  * * * * * 
     vpc_security_group_ids = [aws_security_group.SG-1.id]
     subnet_id = aws_subnet.subnets-cicd[0].id     # tricky [count.index].id       # ids --> plural
-    user_data = data.template_cloudinit_config.cloud-init-user-data.rendered     # user_data
+    user_data = data.template_cloudinit_config.cloud-init-ansible-controller.rendered    # user_data
     user_data_replace_on_change = true  # When used in combination with user_data, this will trigger a destroy and recreate if instance when set to true
     tags = {
         name = "ansible-controller"
         #name = var.vm-names[count.index]   # var in tags as well --> vars can be used anywhere you want
     }    
+}
+
+
+data "template_cloudinit_config" "cloud-init-ansible-nodes" {
+    part {
+        content_type = "text/cloud-config"
+        content = file("ansible-nodes-cloud-config.yml")
+    }
+}
+
+
+resource "aws_instance" "ansible-nodes" {
+    ami = "ami-0f8ca728008ff5af4"
+    instance_type = "t2.medium"
+    associate_public_ip_address = true
+    vpc_security_group_ids = [aws_security_group.SG-1.id]
+    subnet_id = aws_subnet.subnets-cicd[1].id    # use no prefix for referencing to-be created resource blocks
+    key_name = data.aws_key_pair.key-1.key_name  # user data.* as prefix for referencing existing resources
+    user_data = data.template_cloudinit_config.cloud-init-ansible-nodes.rendered    # using data.* as prefix as the yml file already exists
+    user_data_replace_on_change = true
+    tags = {
+        name = "ansible-remote-node"
+    }
 }
