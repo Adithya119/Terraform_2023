@@ -1,0 +1,124 @@
+#cloud-config
+  
+  runcmd:
+    # steps to extend the boot disk to have access to full capacity
+    - growpart /dev/sda 2
+    - pvresize /dev/sda2
+
+#     ---------------
+
+
+
+#cloud-config
+
+  runcmd:
+    - yum install cloud-utils-growpart gdisk -y
+    - growpart /dev/sda 2
+    - pvresize /dev/sda2
+    - lvextend -l +100%FREE /dev/RootVolGroup00/root
+    - xfs_growfs /
+
+#     ---------------
+
+
+
+#cloud-config
+
+# usage of export INSTANCE_ID, awk, sed, sleep, ansible-playbook & \
+runcmd:
+
+- "export INSTANCE_ID=$(hostname -s | awk -F- '{print $NF}')"
+
+- export DASHED_IP=$(hostname -i | sed 's/\./-/g')
+
+- mkdir -p /tmp/codebig2-deploy/ansible/private/
+
+- "while [ ! -f /tmp/codebig2-deploy/ansible/private/vault.20220421.pass ]; do sleep\
+
+  \ 5; done"
+
+- hostnamectl set-hostname --static codebigdev-ccpas2-haproxy-green-$DASHED_IP-$INSTANCE_ID
+
+- cd /tmp/codebig2-deploy/ansible
+
+- "ansible-playbook --connection=local --inventory hosts-localhost-haproxy.ini local-install-haproxy.yml\
+
+  \ --extra-vars \"force_redeploy=true dc_groupvars=['dev_codebig','dev_codebig_ccp','dev_codebig_ccp_as2']\
+
+  \ codebig_blue_or_green=green\" --extra-vars '{\"haproxy_nginx_ips\":[\"96.102.70.229\"\
+
+  ,\"96.102.70.231\",\"96.102.70.230\"]}'"
+
+output:
+
+  all: '| tee -a /var/log/cloud-init-output.log'
+
+ 
+#     --------------- 
+
+ 
+
+#cloud-config
+
+runcmd:
+
+- growpart /dev/sda 1
+
+- pvresize /dev/sda1
+
+- lvextend -r -l +100%FREE /dev/rootvg/root     # users also have data_vg * * * * *
+
+- echo net.ipv6.conf.all.disable_ipv6 = 1 >> /etc/sysctl.conf
+
+- sysctl -p
+
+ 
+#     --------------- 
+
+ 
+
+#cloud-config
+
+# installing packages --> looks simple (may be this code works with any package manager)
+
+package_upgrade: true
+
+packages:
+
+- apt-transport-https
+
+- ca-certificates
+
+- curl
+
+- gnupg-agent
+
+- software-properties-common
+
+- python3-pip
+
+- docker.io
+
+runcmd:
+
+- growpart /dev/sda 1
+
+- pvresize /dev/sda1
+
+- lvextend -r -l +100%FREE /dev/rootvg/root
+# installing docker, create docker user etc..
+- apt-get -y update
+
+- apt-get -y install docker.io
+
+- groupadd docker
+
+- usermod -aG docker ubuntu
+
+- docker run --rm -it bash echo working
+
+- apt-get -y install python3-pip
+
+- pip3 install docker
+
+#     --------------- 

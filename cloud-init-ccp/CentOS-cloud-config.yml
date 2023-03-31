@@ -1,0 +1,105 @@
+#cloud-config
+
+# Centos:
+
+packages:
+
+  - unzip
+
+runcmd:
+
+# LVM details can be read at https://onecloud.comcast.net/docs/using-ccp/resources/application-examples/lvm/   *****
+
+# Start if you want to extend your disks
+
+# Steps to extend the boot disk to have access to full capacity of your boot disk
+
+  - growpart /dev/sda 2
+
+  - pvresize /dev/sda2
+
+  - lvextend -rl +95%FREE /dev/$(vgs --noheadings | awk '{print $1}')/root
+
+# Start of if you are using Extra Disk build
+
+  - pvcreate /dev/sdb
+
+# Example 1: Steps to add the extra disk into root volume group (boot disk)
+
+  - vgextend $(vgs --noheadings | awk '{print $1}') /dev/sdb
+
+# Example 2: Steps to add the extra disk into a dedicated volume group
+
+# appvg in this example
+
+  - vgcreate appvg /dev/sdb
+
+# End of if you are using Extra Disk build
+
+#
+
+# Below are several examples you can select from to use the extra space assigned to your VM
+
+# These are all LVM commands and can be altered, they are not unique to CCP-VM
+
+# Start of examples if you added all available space to the root volume group
+
+# Example 1: Steps to extend all available capacity in roots vg to the root directory (/)
+
+  - lvextend -rl +95%FREE /dev/$(vgs --noheadings | awk '{print $1}')/root
+
+# Example 2: Steps if you want to
+
+# Assign 20G to root and rest of the space to /app
+
+  - lvextend -rL 20G /dev/$(vgs --noheadings | awk '{print $1}')/root
+
+  - lvcreate -l 95%FREE -n applv $(vgs --noheadings | awk '{print $1}')
+
+  - mkfs.xfs /dev/$(vgs --noheadings | awk '{print $1}')/applv
+
+  - mkdir /app
+
+  - mount /dev/$(vgs --noheadings | awk '{print $1}')/applv /app
+
+  - echo /dev/$(vgs --noheadings | awk '{print $1}')/applv /app auto defaults,comment=cloudconfig 0 0 >> /etc/fstab
+
+# End of provided Examples to add all available capacity in roots vg
+
+#
+
+# Start of examples if you added a new volume group onto your Extra Disk
+
+# Example 1: Steps to create a single mountpoint in appvg
+
+  - lvcreate -l 95%FREE -n applv appvg
+
+  - mkfs.xfs /dev/appvg/applv
+
+  - mkdir /app
+
+  - echo /dev/appvg/applv /app auto defaults,comment=cloudconfig 0 0 >> /etc/fstab
+
+  - mount -a
+
+# Example 2: Steps to create multiple mountpoints in appvg
+
+  - lvcreate -L 50G -n loglv appvg
+
+  - mkfs.xfs /dev/appvg/loglv
+
+  - mkdir /log
+
+  - echo /dev/appvg/loglv /log auto defaults,comment=cloudconfig 0 0 >> /etc/fstab
+
+  - lvcreate -l 95%FREE -n applv appvg
+
+  - mkfs.xfs /dev/appvg/applv
+
+  - mkdir /app
+
+  - echo /dev/appvg/applv /app auto defaults,comment=cloudconfig 0 0 >> /etc/fstab
+
+  - mount -a
+
+# End of provided Examples to use a new volume group

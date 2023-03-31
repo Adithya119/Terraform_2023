@@ -1,0 +1,48 @@
+#cloud-config
+
+# Ubuntu:
+
+# Start of BASIC setup
+
+runcmd:
+
+  # Setting up Autobahn
+
+  - echo thename.ofyourautobahn.principal > /etc/ssh/authorized_principals/ubuntu
+
+# End of BASIC setup
+
+  - growpart /dev/sda 1
+
+  - pvresize /dev/sda1
+
+  - lvextend -rl +95%FREE /dev/rootvg/root
+
+  # Option if you want to create you own FS on a second disk
+
+  - pvcreate /dev/sdb
+
+  - vgcreate appvg /dev/sdb
+
+  - lvcreate -l 95%FREE -n applv appvg
+
+  - mkfs.ext4 /dev/appvg/applv
+
+  - mkdir /app
+
+  - echo /dev/appvg/applv /app auto defaults,comment=cloudconfig 0 0 >> /etc/fstab
+
+  - mount /app
+
+  # fix current sources.list so you can talk to Atlas
+
+  - sed -i 's/http:/https:/g' /etc/apt/sources.list
+
+
+
+
+  ### Always make last step
+
+  ### Eject cdrom to release cdrom when cloud-init is done running.
+
+  - eject /dev/cdrom
