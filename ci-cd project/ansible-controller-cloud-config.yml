@@ -2,14 +2,6 @@
 
 # not pushing any keys from local system --> will run ansible playbooks with password prompt until figuring out a better solution
 
-runcmd:
-  - sudo apt update
-  - sudo apt install software-properties-common -y
-  - sudo add-apt-repository --yes --update ppa:ansible/ansible
-  - sudo apt install ansible -y
-  - sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config   # setting this to yes will let you login as "ssh ansible@ip" using password authentication
-  - sudo systemctl restart sshd   # sudo needed
-
 users:
   - default  # I think this points to ubuntu (default) user on ubuntu OS
   - name: ansible     # hyphen given only before name
@@ -18,6 +10,24 @@ users:
     groups: sudo    # adding ansible user to group sudo --> by default this group is given sudo privileges --> as seen in sudoers file.
     plain_text_passwd: 'ansible'  # Authentication failure
     lock_passwd: false   ## setting this true will give Authentication failure when you do su - ansible & give password
+
+
+runcmd:
+  - sudo apt update
+  - sudo apt install software-properties-common -y
+  - sudo add-apt-repository --yes --update ppa:ansible/ansible
+  - sudo apt install ansible -y
+  - sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config   # setting this to yes will let you login as "ssh ansible@ip" using password authentication
+  - sudo systemctl restart sshd   # sudo needed
+  #
+  # setting up data-lv on 2nd disk:
+  - sudo pvcreate /dev/xvdb /dev/xvdc     # leaving /dev/xvdc unallocated
+  - sudo vgcreate datavg /dev/xvdb               # this vg will be created with entire space of the given pv (xvdb) automatically
+  - sudo lvcreate -l 95%FREE  -n datalv datavg
+  - sudo mkfs.ext4 /dev/datavg/datalv
+  - sudo mkdir /app
+  - echo /dev/datavg/datalv  /app  ext4  defaults  0 0 >> /etc/fstab
+  - sudo mount -a
 
 
 # hashing a password is not the ideal way of concealing it
