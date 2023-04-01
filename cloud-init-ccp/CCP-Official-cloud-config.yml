@@ -1,0 +1,22 @@
+#cloud-config    
+
+# This is for CCP-CentOS image
+
+runcmd:
+  - echo ccp-cre-support.ccp-ssh.centos > /etc/ssh/authorized_principals/centos
+  - chage -M -1 centos
+  #
+  # extend root volume to its full capacity
+  - growpart /dev/sda 2
+  - pvresize /dev/sda2
+  - lvextend -l +95%FREE /dev/$(vgs --noheadings | awk '{print $1}')/root     # awk is required because we need to fetch existing name
+  - sudo xfs_growfs /dev/$(vgs --noheadings | awk '{print $1}')/root
+  #
+  # setting up app-lv on 2nd disk
+  - pvcreate /dev/sdb
+  - vgcreate appvg /dev/sdb
+  - lvcreate -l 95%FREE -n applv appvg
+  - mkfs.xfs /dev/appvg/applv           # awk is not required because we are just creating with a name of our choice
+  - mkdir app
+  - echo /dev/appvg/applv app xfs defaults,comment=cloudconfig 0 0 >> /etc/fstab
+  - mount -a
