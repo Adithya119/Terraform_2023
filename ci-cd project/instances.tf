@@ -8,6 +8,28 @@ data "aws_key_pair" "key-1" {    # pulling existing key-pair --> hence used "dat
 }
 
 
+#     ----------
+# for ansible controller instance:-
+
+# creating 2 ebs volumes:
+
+resoure "aws_ebs_volume" "ebs-1" {
+    size = 8
+    availability_zone = var.AZs[0]
+    tags = {
+        name = "ansible-controller-xvdg"
+    }
+}
+
+resoure "aws_ebs_volume" "ebs-2" {
+    size = 8
+    availability_zone = var.AZs[0]
+    tags = {
+        name = "ansible-controller-xvdh"
+    }
+}
+
+
 data "template_cloudinit_config" "cloud-init-ansible-controller" {    # this was working even with just --> data "cloudinit_config"
     part {
       content_type = "text/cloud-config"   # This is "required", opposed to what's mentioned in terraform registry   * * * 
@@ -35,7 +57,23 @@ resource "aws_instance" "ansible-controller" {
     }    
 }
 
+# attaching the 2 ebs volumes to the instance:
 
+resource "aws_volume_attachment" "vol-att-1" {
+    device_name = "/dev/xvdg"
+    volume_id = aws_ebs_volume.ebs-1.id
+    instance_id = aws_instance.ansible-controller.id
+}
+
+resource "aws_volume_attachment" "vol-att-2" {
+    device_name = "/dev/xvdh"
+    volume_id = aws_ebs_volume.ebs-2.id
+    instance_id = aws_instance.ansible-controller.id
+}
+
+
+# --------
+# for remote nodes:
 data "template_cloudinit_config" "cloud-init-ansible-nodes" {
     part {
         content_type = "text/cloud-config"

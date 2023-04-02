@@ -21,8 +21,8 @@ runcmd:
   - sudo systemctl restart sshd   # sudo needed
   #
   # setting up data-lv on 2nd disk:
-  - sudo pvcreate /dev/xvdb /dev/xvdc     # leaving /dev/xvdc unallocated
-  - sudo vgcreate datavg /dev/xvdb               # this vg will be created with entire space of the given pv (xvdb) automatically
+  - sudo pvcreate /dev/xvdg /dev/xvdh     # leaving /dev/xvdc unallocated
+  - sudo vgcreate datavg /dev/xvdg               # this vg will be created with entire space of the given pv (xvdg) automatically
   - sudo lvcreate -l 95%FREE  -n datalv datavg
   - sudo mkfs.ext4 /dev/datavg/datalv
   - sudo mkdir /app
