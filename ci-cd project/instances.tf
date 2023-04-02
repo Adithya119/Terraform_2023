@@ -13,7 +13,7 @@ data "aws_key_pair" "key-1" {    # pulling existing key-pair --> hence used "dat
 
 # creating 2 ebs volumes:
 
-resoure "aws_ebs_volume" "ebs-1" {
+resource "aws_ebs_volume" "ebs-1" {
     size = 8
     availability_zone = var.AZs[0]
     tags = {
@@ -21,7 +21,7 @@ resoure "aws_ebs_volume" "ebs-1" {
     }
 }
 
-resoure "aws_ebs_volume" "ebs-2" {
+resource "aws_ebs_volume" "ebs-2" {
     size = 8
     availability_zone = var.AZs[0]
     tags = {
