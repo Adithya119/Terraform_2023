@@ -26,7 +26,7 @@ runcmd:
   - sudo lvcreate -l 95%FREE  -n datalv datavg
   - sudo mkfs.ext4 /dev/datavg/datalv
   - sudo mkdir /app
-  - echo /dev/datavg/datalv  /app  ext4  defaults  0 0 >> /etc/fstab
+  - echo /dev/datavg/datalv  /app  ext4  defaults  0 0 >> /etc/fstab     # while testing it needs sudo permissions but cloud-init did it without sudo
   - sudo mount -a
 
 
