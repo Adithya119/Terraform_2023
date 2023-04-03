@@ -2,6 +2,8 @@
 # using inv file with 2 remote node ip's  --> this is commented out in this page
 # not using inv file but giving multiple ip's on CLI using the [count.index]
 
+# on a separate note, you can actually do apache installation on remote nodes using cloud-init, thereby not using ansible at all.
+
 data "aws_vpc" "default-vpc" {
     default = true
 }
@@ -13,7 +15,7 @@ data "aws_subnet" "first-subnet" {
 }
 
 
-data "aws_security_group" "open_all_SG" {           # you can directly give ip or give the id in variable file to separate the variables
+data "aws_security_group" "open_all_SG" {           # you can directly give id or give the id in variable file to separate the variables
     id = "sg-0705ebd862427df7f"
 }
 
