@@ -20,3 +20,11 @@ runcmd:
   - mkdir app
   - echo /dev/appvg/applv app xfs defaults,comment=cloudconfig 0 0 >> /etc/fstab
   - mount -a
+
+
+  # NOTE:-
+   # To increase a root volume which is not lvm:-
+   # 1) modify volume size from UI (AWS ec2 console)
+   # 2) extend fs from CLI using:-
+      # (i) growpart /dev/xvda 1
+      # (ii) resize2fs /dev/xvda1
