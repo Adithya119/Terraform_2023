@@ -117,7 +117,7 @@ resource "aws_security_group" "ssh-db-sg" {
 
 resource "aws_internet_gateway" "igw-2" {
     vpc_id = aws_vpc.vpc-2.id
-    tags {
+    tags = {
         Name = "igw-2"
     }
 }

@@ -6,7 +6,7 @@ variable "vpc_cidr" {
  #   default = "practice-vpc"
 #}
 
-variable "instance-type" {
+variable "instance-types" {
     default = "t2.medium"
 }
 

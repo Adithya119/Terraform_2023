@@ -7,12 +7,12 @@ resource "aws_key_pair" "key-2" {    # remember this resource
 resource "aws_instance" "web-vms" {
     count = terraform.workspace == "ST" ?2:1      ##
     ami = "ami-0851b76e8b1bce90b"
-    instance_type = var.instance-type
+    instance_type = var.instance-types
     vpc_security_group_ids = [ aws_security_group.ssh-sg.id, aws_security_group.http-sg.id ]   # vpc is not required. This is enough.
     subnet_id = aws_subnet.web-subnets[count.index].id
     key_name = aws_key_pair.key-2.key_name
     associate_public_ip_address = true
-    tags {
+    tags = {
         Name = format("%s-web-vm-%d", terraform.workspace, count.index)     ##
         Env = terraform.workspace
     }
@@ -21,7 +21,7 @@ resource "aws_instance" "web-vms" {
 resource "aws_instance" "db-vms" {
     count = terraform.workspace == "ST" ?2:1
     ami = "ami-0851b76e8b1bce90b"
-    instance_type = var.instance_type
+    instance_type = var.instance-types
     vpc_security_group_ids = [aws_security_group.ssh-db-sg.id]   
     subnet_id = aws_subnet.db-subnets[count.index].id
     associate_public_ip_address = true
