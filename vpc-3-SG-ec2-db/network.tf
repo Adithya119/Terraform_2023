@@ -105,14 +105,14 @@ resource "aws_internet_gateway" "igw-1" {
   }
 }
 
-# A route table connects igw to vpc
+# A route table connects specified traffic to igw, which is attached to some vpc
 # public route table
 resource "aws_route_table" "public_route_table" {       
   vpc_id = aws_vpc.primary-vpc.id
   
   route {                                         # route block
-  cidr_block = local.anywhere                        # will allow all connections from igw-1 to vpc
-  gateway_id = aws_internet_gateway.igw-1.id         # attaching the igw-1 to vpc
+  cidr_block = local.anywhere                        # allow traffic from specified cidrs (from)
+  gateway_id = aws_internet_gateway.igw-1.id         # send the allowed traffic to specified igw (to)
   }
 
   tags = {
@@ -131,7 +131,7 @@ resource "aws_route_table" "private_route_table" {    # incoming connections fro
   }
 }
 
-# A route table association connects igw to specific subnets inside a vpc
+# A route table association connects a route table to specific subnet inside a vpc
 resource "aws_route_table_association" "web-1_public_association" {
   subnet_id = aws_subnet.subnets[0].id
   route_table_id = aws_route_table.public_route_table.id

@@ -14,7 +14,7 @@ resource "aws_db_instance" "db-instance-1" {
     identifier = "database-1"                  # name of the database which is visible in AWS UI
     instance_class = "db.t3.micro"
     multi_az = false
-    name = "postgresDB"                         # name of the database created inside the instance
+    db_name = "postgresDB"                         # name of the database created inside the instance
     username = "postgres"
     password = "postgres"
     vpc_security_group_ids = [aws_security_group.DB-SG.id]
