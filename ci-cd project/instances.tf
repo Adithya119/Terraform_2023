@@ -15,7 +15,7 @@ data "aws_key_pair" "key-1" {    # pulling existing key-pair --> hence used "dat
 
 resource "aws_ebs_volume" "ebs-1" {
     size = 8
-    availability_zone = var.AZs[0]
+    availability_zone = var.AZs[0]              # ebs volumes are only linked to AZ.
     tags = {
         name = "ansible-controller-xvdg"
     }

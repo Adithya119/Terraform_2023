@@ -48,7 +48,7 @@ resource "null_resource" "install_and_run_spc"{          # spaces are not accept
         host = aws_instance.web-vms[count.index].public_ip
     }
 
-    provisioner "file" {
+    provisioner "file" {                                # copy operation using "file"
         source = "deploy-spc.sh"                         # file present on local. change the build_id everytime you modify the contents of this file.
         destination = "/home/ubuntu/deploy-spc.sh"
     }

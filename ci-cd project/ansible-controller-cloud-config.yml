@@ -9,7 +9,7 @@ users:
     sudo: ALL=(ALL) NOPASSWD:ALL   ## sudoers file will not show an entry on ansible user. May be that's why ansible user is added to the group "sudo" --> check the line below
     groups: sudo    # adding ansible user to group sudo --> by default this group is given sudo privileges --> as seen in sudoers file.
     plain_text_passwd: 'ansible'  # Authentication failure
-    lock_passwd: false   ## setting this true will give Authentication failure when you do su - ansible & give password
+    lock_passwd: false   ## setting this to true will give Authentication failure when you do su - ansible & give password
 
 
 runcmd:
@@ -22,8 +22,8 @@ runcmd:
   #
   # setting up data-lv on 2nd disk:
   - sudo pvcreate /dev/xvdg /dev/xvdh     # leaving /dev/xvdc unallocated
-  - sudo vgcreate datavg /dev/xvdg               # this vg will be created with entire space of the given pv (xvdg) automatically
-  - sudo lvcreate -l 95%FREE  -n datalv datavg
+  - sudo vgcreate datavg /dev/xvdg               # this vg will be created with entire space of the given disk automatically
+  - sudo lvcreate -l 95%FREE -n datalv datavg
   - sudo mkfs.ext4 /dev/datavg/datalv
   - sudo mkdir /app
   - echo /dev/datavg/datalv  /app  ext4  defaults  0 0 >> /etc/fstab     # while testing it needs sudo permissions but cloud-init did it without sudo
