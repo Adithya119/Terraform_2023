@@ -1,6 +1,6 @@
 
 data "aws_key_pair" "key-1" {    # pulling existing key-pair --> hence used "data" block here
-    key_name = "key1"  # optional
+    #key_name = "key1"  # optional
     filter {    # required
         name = "key-pair-id"
         values = ["key-09b50c94aa242c092"]     # plural --> hence the use of []
