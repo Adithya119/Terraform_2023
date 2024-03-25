@@ -1,0 +1,120 @@
+
+root@ip-172-31-44-94:~# lsblk
+NAME             MAJ:MIN   RM  SIZE RO TYPE MOUNTPOINTS
+loop0              7:0      0 24.9M  1 loop /snap/amazon-ssm-agent/7628
+loop1              7:1      0 55.7M  1 loop /snap/core18/2812
+loop2              7:2      0 63.9M  1 loop /snap/core20/2182
+loop3              7:3      0   87M  1 loop /snap/lxd/27037
+loop4              7:4      0 40.4M  1 loop /snap/snapd/20671
+xvda             202:0      0    8G  0 disk
+├─xvda1          202:1      0  7.9G  0 part /
+├─xvda14         202:14     0    4M  0 part
+└─xvda15         202:15     0  106M  0 part /boot/efi
+xvdb             202:16     0   10G  0 disk
+└─xvdb1          202:17     0   10G  0 part
+  └─rootvg-lvvar 252:0      0   10G  0 lvm  /var
+xvdbc            202:13824  0   10G  0 disk
+
+
+######   1  #######
+
+root@ip-172-31-44-94:~# pvcreate /dev/xvdbc
+  Physical volume "/dev/xvdbc" successfully created.
+
+
+root@ip-172-31-44-94:~# pvs
+  PV         VG     Fmt  Attr PSize   PFree
+  /dev/xvdb1 rootvg lvm2 a--  <10.00g     0
+  /dev/xvdbc        lvm2 ---   10.00g 10.00g
+
+
+root@ip-172-31-44-94:~# vgs
+  VG     #PV #LV #SN Attr   VSize   VFree
+  rootvg   1   1   0 wz--n- <10.00g    0
+
+
+######   2  #######
+
+root@ip-172-31-44-94:~# vgextend rootvg /dev/xvdbc
+  Volume group "rootvg" successfully extended
+
+
+root@ip-172-31-44-94:~# vgs
+  VG     #PV #LV #SN Attr   VSize  VFree
+  rootvg   2   1   0 wz--n- 19.99g <10.00g
+
+
+######   3  #######
+
+root@ip-172-31-44-94:~# lvextend -l +100%Free rootvg/lvvar
+  Size of logical volume rootvg/lvvar changed from <10.00 GiB (2559 extents) to 19.99 GiB (5118 extents).
+  Logical volume rootvg/lvvar successfully resized.
+
+root@ip-172-31-44-94:~# df -hT
+Filesystem               Type   Size  Used Avail Use% Mounted on
+/dev/root                ext4   7.6G  1.6G  6.0G  21% /
+tmpfs                    tmpfs  475M     0  475M   0% /dev/shm
+tmpfs                    tmpfs  190M  868K  190M   1% /run
+tmpfs                    tmpfs  5.0M     0  5.0M   0% /run/lock
+/dev/xvda15              vfat   105M  6.1M   99M   6% /boot/efi
+tmpfs                    tmpfs   95M  4.0K   95M   1% /run/user/1000
+/dev/mapper/rootvg-lvvar ext4   9.8G   24K  9.3G   1% /var
+
+
+######   4  #######
+
+root@ip-172-31-44-94:~# resize2fs /dev/mapper/rootvg-lvvar                # use the lv name from df -hT command output
+resize2fs 1.46.5 (30-Dec-2021)
+Filesystem at /dev/mapper/rootvg-lvvar is mounted on /var; on-line resizing required
+old_desc_blocks = 2, new_desc_blocks = 3
+The filesystem on /dev/mapper/rootvg-lvvar is now 5240832 (4k) blocks long.
+
+
+
+######################   check   #########################
+
+root@ip-172-31-44-94:~# df -hT
+Filesystem               Type   Size  Used Avail Use% Mounted on
+/dev/root                ext4   7.6G  1.6G  6.0G  21% /
+tmpfs                    tmpfs  475M     0  475M   0% /dev/shm
+tmpfs                    tmpfs  190M  868K  190M   1% /run
+tmpfs                    tmpfs  5.0M     0  5.0M   0% /run/lock
+/dev/xvda15              vfat   105M  6.1M   99M   6% /boot/efi
+tmpfs                    tmpfs   95M  4.0K   95M   1% /run/user/1000
+/dev/mapper/rootvg-lvvar ext4    20G   24K   19G   1% /var
+
+
+
+
+#######################   fstab    #########################
+
+root@ip-172-31-44-94:~# lsblk
+NAME             MAJ:MIN   RM  SIZE RO TYPE MOUNTPOINTS
+loop0              7:0      0 24.9M  1 loop /snap/amazon-ssm-agent/7628
+loop1              7:1      0 55.7M  1 loop /snap/core18/2812
+loop2              7:2      0 63.9M  1 loop /snap/core20/2182
+loop3              7:3      0   87M  1 loop /snap/lxd/27037
+loop4              7:4      0 40.4M  1 loop /snap/snapd/20671
+xvda             202:0      0    8G  0 disk
+├─xvda1          202:1      0  7.9G  0 part /
+├─xvda14         202:14     0    4M  0 part
+└─xvda15         202:15     0  106M  0 part /boot/efi
+xvdb             202:16     0   10G  0 disk
+└─xvdb1          202:17     0   10G  0 part
+  └─rootvg-lvvar 252:0      0   20G  0 lvm  /var
+xvdbc            202:13824  0   10G  0 disk
+└─rootvg-lvvar   252:0      0   20G  0 lvm  /var
+
+++++++
+UUID of the lv is given in fstab file. check below:-
+Hence you dont need to mount /dev/xvdb1 or /dev/xvdbc
+++++++
+
+root@ip-172-31-44-94:~# blkid /dev/mapper/rootvg-lvvar
+/dev/mapper/rootvg-lvvar: UUID="9b967626-2279-4425-865e-01138190a768" BLOCK_SIZE="4096" TYPE="ext4"
+
+
+root@ip-172-31-44-94:~# cat /etc/fstab
+LABEL=cloudimg-rootfs   /        ext4   discard,errors=remount-ro       0 1
+LABEL=UEFI      /boot/efi       vfat    umask=0077      0 1
+UUID="9b967626-2279-4425-865e-01138190a768"         /var        ext4   discard,defaults     0 2
